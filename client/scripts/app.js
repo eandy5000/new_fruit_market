@@ -89,15 +89,8 @@ Purchase.prototype = {
        var apple = new Purchase("Apple",5);
        
 // game mechanics        
-       function countDown () {
-           var num = 10;
-           setInterval(function(){
-               if(num < 1) return;
-               console.log(num);
-               num--;
-           },1000);
-           
-       }
-       
-       countDown();      
+
+$(document).ready(function(){
+    
+});  
        
