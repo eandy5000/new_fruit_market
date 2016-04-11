@@ -44,6 +44,7 @@ function Player (name, money) {
     this.name = name;
     this.money = money;
     this.inventory = [];
+    this.current = {};
 }
 
 Player.prototype = {
@@ -82,8 +83,10 @@ Purchase.prototype = {
 }       
        
 // GAME SETUP                 
- // player setup      
+ // player setup 
+       var player;      
        var joe = new Player("Joe", startMoney);
+       var player = joe;
  //fruit setup      
        var gameFruit = [];
        var apple = new Purchase("Apple",5);
@@ -92,25 +95,39 @@ Purchase.prototype = {
        gameFruit.push(apple);
        
 // GAME MECHANICS
+function buyButton (self) {
+    var index = $(self).parent().attr('data-fruit-number');
+    var purchase = new Purchase(gameFruit[index].name, gameFruit[index].price);
+    
+    player.inventory.push(purchase);
+    
+  if (!player.current.gameFruit[index]) {
+      console.log('works');
+  }
 
+    
+    console.log(gameFruit[index].name);
+}
         
 //DOM
 
 function addMarketFruits () {
-    
-    var el = '<h5>Fruit: '+apple.name+'</h5>'+
-            '<img src=" ' + apple.fruitImage + ' " alt="fruit image">'+
-            '<h6>Price: $'+apple.price+'</h6>'+
-            '<button class="sell btn btn-primary btn-lg">Buy</button>'+
-            '<button class="sell btn btn-info btn-lg">Sell</button>';
-    
-    
-    $('#market-ticker').append(el);
+   for (var i = 0; i < gameFruit.length; i++) { 
+    var el = '<div data-fruit-number ="'+i+'">'+
+            '<h5>Fruit: '+gameFruit[i].name+'</h5>'+
+            '<img src=" ' + gameFruit[i].fruitImage + ' " alt="fruit image">'+
+            '<h6>Price: $'+gameFruit[i].price+'</h6>'+
+            '<button class="buy btn btn-primary btn-lg">Buy</button>'+
+            '<button class="sell btn btn-info btn-lg">Sell</button>' +
+            '</div>';
+     
+        $('#market-ticker').append(el);
+    }  
 }
 
 function addPlayer () {
-    var el = '<h5>Name: '+joe.name+'</h5>'+
-             '<h5>Money: $'+joe.money+'</h5';
+    var el = '<h5>Name: '+player.name+'</h5>'+
+             '<h5>Money: $'+player.money+'</h5';
     
     $('#player-screen').append(el);
 }
@@ -120,7 +137,11 @@ $(document).ready(function(){
  // inital dom config
  addMarketFruits(); 
  addPlayer();  
-    
+ // listeners
+ $('#market-ticker').on('click','.buy', function (){
+     var self = this;
+     buyButton(self);
+ });   
     
 });  
        

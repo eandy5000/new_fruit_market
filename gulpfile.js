@@ -21,7 +21,7 @@ gulp.task('index', function(){
 
 gulp.task('script', function(){
    return gulp.src('client/scripts/*.js')
-            .pipe(uglify())
+           // for now .pipe(uglify())
             .pipe(gulp.dest('public/scripts/')); 
 });
 
