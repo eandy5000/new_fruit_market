@@ -37,7 +37,7 @@ gulp.task('scss', function(){
 });
 
 gulp.task('image', function (){
-   return gulp.src('client/views/images/*')
+   return gulp.src('client/media/*')
             .pipe(imagemin())
-            .pipe(gulp.dest('public/views/images'));
+            .pipe(gulp.dest('public/media'));
 });

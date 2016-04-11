@@ -22,7 +22,6 @@ function priceChange () {
 function Fruit (name, price, image){
         this.name = name;
         this.price = price;
-        this.image = image;
 }
        
 Fruit.prototype = {
@@ -32,10 +31,10 @@ Fruit.prototype = {
     set fruitPrice (num) {
         return this.price = this.price + num;
     },
-    set image (url) {
+    set fruitImage (url) {
         return this.image = url;
     },
-    get image () {
+    get FruitImage () {
         return this.image;
     }
 }
@@ -82,15 +81,46 @@ Purchase.prototype = {
     }
 }       
        
-// game setup                 
-       
+// GAME SETUP                 
+ // player setup      
        var joe = new Player("Joe", startMoney);
-       
+ //fruit setup      
+       var gameFruit = [];
        var apple = new Purchase("Apple",5);
+       apple.fruitImage = '../media/apple.png';
        
-// game mechanics        
+       gameFruit.push(apple);
+       
+// GAME MECHANICS
+
+        
+//DOM
+
+function addMarketFruits () {
+    
+    var el = '<h5>Fruit: '+apple.name+'</h5>'+
+            '<img src=" ' + apple.fruitImage + ' " alt="fruit image">'+
+            '<h6>Price: $'+apple.price+'</h6>'+
+            '<button class="sell btn btn-primary btn-lg">Buy</button>'+
+            '<button class="sell btn btn-info btn-lg">Sell</button>';
+    
+    
+    $('#market-ticker').append(el);
+}
+
+function addPlayer () {
+    var el = '<h5>Name: '+joe.name+'</h5>'+
+             '<h5>Money: $'+joe.money+'</h5';
+    
+    $('#player-screen').append(el);
+}
 
 $(document).ready(function(){
+    
+ // inital dom config
+ addMarketFruits(); 
+ addPlayer();  
+    
     
 });  
        
