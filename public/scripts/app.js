@@ -89,35 +89,53 @@ Purchase.prototype = {
        var player = joe;
  //fruit setup      
        var gameFruit = [];
-       var apple = new Purchase("apple",20);
+       var apple = new Purchase("Apple",20);
        apple.fruitImage = '../media/apple.png';
        
        gameFruit.push(apple);
        
 // GAME MECHANICS
+
+//buy function
 function buyButton (self) {
-  
-  
-    
     var index = $(self).parent().attr('data-fruit-number');
     var name = gameFruit[index].name;
     var price = gameFruit[index].price;
+ // funds check pre-buy
+
+ if ((player.money - price) < 0) {
+     return;
+ }   else {
+    
     var purchase = new Purchase(name, price);
-    // fund check
-    if((player.money - price) < 0) {
-        return;
-    } else {
- // checks if fruit is in inventory and increments, or creates and increments   
-        if(!player.current[name]){
-        player.current[name] = 1;
+    player.inventory.push(purchase);
+    player.money = player.money - price;
+ // adds fruit to player's current    
+        if (!player.current[name]) {
+            player.current[name] = 1;
         } else {
             player.current[name]++;
         }
-        player.inventory.push(purchase);
-        player.money = player.money - price;
-    }
+
+ }  
+
 }
-        
+ // sell function   
+ function sellButton (self) {
+     var index = $(self).parent().attr('data-fruit-number');
+     var name = gameFruit[index].name;
+     var price = gameFruit[index].price;
+ // pre-sell inventory check
+    if (!player.current[name] || player.current[name] < 1) {
+        console.log('insufficent');
+        return;
+    }   else {
+        player.money = player.money + price;
+        player.current[name]--;
+    }    
+   
+ }
+     
 //DOM
 
 function addMarketFruits () {
@@ -151,6 +169,11 @@ $(document).ready(function(){
      var self = this;
      buyButton(self);
  });   
+ 
+ $('#market-ticker').on('click', '.sell', function(){
+    var self = this; 
+    sellButton(self);
+ });
     
 });  
        
