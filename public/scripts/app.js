@@ -3,7 +3,11 @@ const startMoney = 100;
 // 15 sec round with 12 rounds
 const roundTime = 15000;  
 const fruitPriceMin = .01;
-const fruitPriceMax = 9.99;    
+const fruitPriceMax = 9.99;  
+
+//game variable
+var gameComplete = false; 
+
 
 
 // functions  
@@ -95,19 +99,19 @@ Purchase.prototype = {
  //fruit setup      
        var gameFruit = [];
        
-       var apple = new Purchase("Apple",20);
+       var apple = new Purchase("Apple", startPrice);
        apple.fruitImage = '../media/apple.png';
        gameFruit.push(apple);
        
-       var pear = new Purchase("Pear",20);
+       var pear = new Purchase("Pear", startPrice);
        pear.fruitImage = '../media/pear.png';
        gameFruit.push(pear);
        
-       var bananas = new Purchase("Bananas",20);
+       var bananas = new Purchase("Bananas", startPrice);
        bananas.fruitImage = '../media/bananas.png';
        gameFruit.push(bananas);
        
-       var orange = new Purchase("Orange",20);
+       var orange = new Purchase("Orange", startPrice);
        orange.fruitImage = '../media/orange.png';
        gameFruit.push(orange);
        
@@ -120,7 +124,7 @@ function buyButton (self) {
     var price = gameFruit[index].price;
  // funds check pre-buy
 
- if ((player.money - price) < 0) {
+ if ((player.money - price || gameComplete === true) < 0) {
      return;
  }   else {
     
@@ -143,7 +147,7 @@ function buyButton (self) {
      var name = gameFruit[index].name;
      var price = gameFruit[index].price;
  // pre-sell inventory check
-    if (!player.current[name] || player.current[name] < 1) {
+    if (!player.current[name] || player.current[name] < 1 || gameComplete === true) {
         return;
     }   else {
         player.money = player.money + price;
@@ -157,24 +161,32 @@ function buyButton (self) {
     var counter = 0;
      setInterval(function(){
          if ( counter > 12) {
+            gameOver(); 
              return;
             } else {
-         console.log(counter);
          priceChanger();
          updateMarketFruits();
          counter++; 
             }
          
-     }, roundTime);
+     }, 2000); // change back to roundtime variable
+     
  }
+ 
 
 //price change interval
 function priceChanger () {
-   
+    
+ //// testObj potential fix for final money problem    
+   var testObj = {};
     for (var i = 0; i < gameFruit.length; i++) {
-        console.log(priceChange()," ",gameFruit[i].price)
+     
         gameFruit[i].price = gameFruit[i].price + priceChange();
+        var key = gameFruit[i].name;
+        testObj[key] = gameFruit[i].price; 
     }
+    console.log(testObj);
+    return;
 } 
 
 function init () {
@@ -224,6 +236,31 @@ function updatePlayer () {
     $('#player-inventory').append(el);
 }
 
+// changes directions to game over
+function gameOver () {
+    
+    gameComplete = true;
+    return gameStats();
+    
+}
+
+function gameStats () {
+  var money = player.money;
+  for (var i in player.current) {
+      money = money + (player.current[i])
+  }  
+    
+  var profit =1;  
+  var el = '<h1>Game Over!</h1>'+
+             '<h5>Transactions: '+player.inventory.length+'</h5>'+
+             '<h5>Final money: $'+player.money.toFixed(2)+'</h5>'+
+             '<h5>Profit: $'+profit.toFixed(2)+'</h5>';
+             
+    $('#directions').empty();
+    $('#directions').append(el);
+}
+
+
 $(document).ready(function(){
     
  // inital dom config
@@ -246,7 +283,6 @@ $(document).ready(function(){
  // game logic
  //init fires game logic when START is clicked
  $('.jumbotron').on('click', '#start', function(){
-    console.log('wrk'); 
     init();
  });
   
