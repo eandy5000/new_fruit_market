@@ -1,8 +1,13 @@
 const startPrice = 5;
-const startMoney = 100;       
+const startMoney = 100; 
+// 15 sec round with 12 rounds
+const roundTime = 15000;  
+const fruitPriceMin = .01;
+const fruitPriceMax = 9.99;    
 
 
-// functions        
+// functions  
+// generates a random price change      
 function priceChange () {
     const min = 1;
     const max = 100;
@@ -89,10 +94,22 @@ Purchase.prototype = {
        var player = joe;
  //fruit setup      
        var gameFruit = [];
+       
        var apple = new Purchase("Apple",20);
        apple.fruitImage = '../media/apple.png';
-       
        gameFruit.push(apple);
+       
+       var pear = new Purchase("Pear",20);
+       pear.fruitImage = '../media/pear.png';
+       gameFruit.push(pear);
+       
+       var bananas = new Purchase("Bananas",20);
+       bananas.fruitImage = '../media/bananas.png';
+       gameFruit.push(bananas);
+       
+       var orange = new Purchase("Orange",20);
+       orange.fruitImage = '../media/orange.png';
+       gameFruit.push(orange);
        
 // GAME MECHANICS
 
@@ -127,7 +144,6 @@ function buyButton (self) {
      var price = gameFruit[index].price;
  // pre-sell inventory check
     if (!player.current[name] || player.current[name] < 1) {
-        console.log('insufficent');
         return;
     }   else {
         player.money = player.money + price;
@@ -135,45 +151,104 @@ function buyButton (self) {
     }    
    
  }
+ 
+// game length interval 
+ function gameInterval () {
+    var counter = 0;
+     setInterval(function(){
+         if ( counter > 12) {
+             return;
+            } else {
+         console.log(counter);
+         priceChanger();
+         updateMarketFruits();
+         counter++; 
+            }
+         
+     }, roundTime);
+ }
+
+//price change interval
+function priceChanger () {
+   
+    for (var i = 0; i < gameFruit.length; i++) {
+        console.log(priceChange()," ",gameFruit[i].price)
+        gameFruit[i].price = gameFruit[i].price + priceChange();
+    }
+} 
+
+function init () {
+ //these two functions change the price at game start
+ priceChanger();
+ updateMarketFruits();
+ // game 
+ gameInterval(); 
+}
      
 //DOM
 
-function addMarketFruits () {
+function updateMarketFruits () {
+     $('#market-ticker').empty();
    for (var i = 0; i < gameFruit.length; i++) { 
-    var el = '<div data-fruit-number ="'+i+'">'+
+    var el = '<div data-fruit-number ="'+i+'" class = "col-md-3">'+
             '<h5>Fruit: '+gameFruit[i].name+'</h5>'+
             '<img src=" ' + gameFruit[i].fruitImage + ' " alt="fruit image">'+
-            '<h6>Price: $'+gameFruit[i].price+'</h6>'+
+            '<h6>Price: $'+(gameFruit[i].price).toFixed(2)+'</h6>'+
             '<button class="buy btn btn-primary btn-lg">Buy</button>'+
             '<button class="sell btn btn-info btn-lg">Sell</button>' +
             '</div>';
      
+       
         $('#market-ticker').append(el);
     }  
 }
 
 function addPlayer () {
-    var el = '<h5>Name: '+player.name+'</h5>'+
-             '<h5>Money: $'+player.money+'</h5';
-    
-    $('#player-screen').append(el);
+    var el = '<h4>Name: '+player.name+'</h4>'+
+             '<h5>Money: $'+(player.money).toFixed(2)+'</h5'; 
+ 
+     $('#player-inventory').append(el);
+}
+
+function updatePlayer () {
+   var el = '<h4>Name: '+player.name+'</h4>'+
+            '<h5>Money: $'+(player.money).toFixed(2)+'</h5><br>';  
+       
+  
+  // fruit inventory display
+  for (var i in player.current){
+      el = el + '<h5>'+ i + " : " + player.current[i] +'</h5>';
+ //     $('#player-inventory').append(el2); 
+  }
+    $('#player-inventory').empty();
+    $('#player-inventory').append(el);
 }
 
 $(document).ready(function(){
     
  // inital dom config
- addMarketFruits(); 
+ updateMarketFruits(); 
  addPlayer();  
  // listeners
  $('#market-ticker').on('click','.buy', function (){
      var self = this;
      buyButton(self);
+     updatePlayer();
  });   
  
  $('#market-ticker').on('click', '.sell', function(){
     var self = this; 
     sellButton(self);
+    updatePlayer();
  });
-    
+
+ 
+ // game logic
+ //init fires game logic when START is clicked
+ $('.jumbotron').on('click', '#start', function(){
+    console.log('wrk'); 
+    init();
+ });
+  
 });  
        
